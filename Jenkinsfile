@@ -43,10 +43,19 @@ pipeline {
         }
         stage('Deploy - CI') {
             steps {
-                sh 'docker-compose down -v --rmi all | xargs echo'
-                sh 'docker-compose up -d'
-                sh 'docker start nginx-gen | xargs echo'
-                sh 'sleep 25s'
+                withAWS(credentials:'aws-jenkins-build') {
+                    sh '''
+                    export DOCKER_LOGIN="`aws ecr get-login --no-include-email --region us-east-1`"
+                    $DOCKER_LOGIN
+                    '''
+                    ecrLogin()
+                    script {
+                        sh 'docker-compose down -v --rmi all | xargs echo'
+                        sh 'docker-compose up -d'
+                        sh 'docker start nginx-gen | xargs echo'
+                        sh 'sleep 25s'
+                    }
+                }
             }
         }
     }
