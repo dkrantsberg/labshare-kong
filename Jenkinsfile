@@ -42,6 +42,9 @@ pipeline {
             }
         }
         stage('Deploy - CI') {
+            agent {
+                label 'aws-ci-docker-host-linux-1.ncats'
+            }
             steps {
                 withAWS(credentials:'aws-jenkins-build') {
                     sh '''
