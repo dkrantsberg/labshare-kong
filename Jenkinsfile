@@ -1,10 +1,3 @@
-def deployKongContainers() {
-    docker-compose down -v --rmi all | xargs echo
-    docker-compose up -d
-    docker start nginx-gen | xargs echo
-    sleep 25s
-}
-
 pipeline {
     options {
         skipDefaultCheckout()
@@ -50,7 +43,10 @@ pipeline {
         }
         stage('Deploy - CI') {
             steps {
-               deployKongContainers();
+                sh 'docker-compose down -v --rmi all | xargs echo'
+                sh 'docker-compose up -d'
+                sh 'docker start nginx-gen | xargs echo'
+                sh 'sleep 25s'
             }
         }
     }
